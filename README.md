@@ -1,5 +1,8 @@
 # pico-bt-usb-m4a
 
+> [!WARNING]
+> **Untested / Experimental AI-Generated Firmware**: This project has **not yet been tested on physical Raspberry Pi Pico WH or vehicle hardware** (only verified in host simulation against `FFmpeg` and `CTest`). It was designed and generated with **Antigravity (Google DeepMind)**. Use at your own risk and test at low volume before connecting to automotive audio equipment.
+
 Raspberry Pi Pico W / WH firmware that receives Bluetooth Classic A2DP audio (`AAC-LC`) and exposes a virtual **FAT32 USB Mass Storage** flash drive containing a single ~17.4-hour (`~1.93 GiB`) `.m4a` file (`BT_AUDIO.M4A`) streamed on-the-fly when played by automotive head units that only support USB media files (e.g., Suzuki `84MS0-14E`).
 
 ## Target Head Unit Compatibility (`84MS0-14E`)
