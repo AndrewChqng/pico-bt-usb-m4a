@@ -59,14 +59,14 @@ static void find_last_bonded_device(void) {
     link_key_type_t type;
     btstack_link_key_iterator_t it;
 
-    if (!hci_link_key_iterator_init(&it)) {
+    if (!gap_link_key_iterator_init(&it)) {
         return;
     }
-    if (hci_link_key_iterator_get_next(&it, addr, link_key, &type)) {
+    if (gap_link_key_iterator_get_next(&it, addr, link_key, &type)) {
         memcpy(g_last_bonded_addr, addr, sizeof(bd_addr_t));
         g_has_last_bonded = true;
     }
-    hci_link_key_iterator_done(&it);
+    gap_link_key_iterator_done(&it);
 }
 
 static void status_timer_handler(btstack_timer_source_t *ts) {
@@ -251,7 +251,7 @@ int bt_a2dp_sink_init(void) {
     device_id_create_sdp_record(g_device_id_sdp_service_buffer,
                                 sdp_create_service_record_handle(),
                                 DEVICE_ID_VENDOR_ID_SOURCE_BLUETOOTH,
-                                BLUETOOTH_COMPANY_ID_RASPBERRY_PI_FOUNDATION,
+                                BLUETOOTH_COMPANY_ID_BROADCOM_CORPORATION,
                                 1, 1);
     sdp_register_service(g_device_id_sdp_service_buffer);
 
