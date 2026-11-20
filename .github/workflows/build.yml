@@ -39,7 +39,7 @@ jobs:
 
       - name: Clone Raspberry Pi Pico SDK
         run: |
-          git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git ${RUNNER_TEMP}/pico-sdk
+          git clone --depth 1 --branch 2.2.0 https://github.com/raspberrypi/pico-sdk.git ${RUNNER_TEMP}/pico-sdk
           cd ${RUNNER_TEMP}/pico-sdk
           git submodule update --init --depth 1
 
