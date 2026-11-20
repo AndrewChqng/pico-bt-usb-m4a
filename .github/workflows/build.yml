@@ -14,16 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
-
       - name: Build and Run Host Test Suite
         run: |
-          mkdir build-tests
-          cd build-tests
-          cmake -DBUILD_HOST_TESTS=ON ..
-          make -j$(nproc)
-          ctest --output-on-failure -V
+          cmake -S . -B build-tests -DBUILD_HOST_TESTS=ON
+          cmake --build build-tests --parallel
+          ctest --test-dir build-tests --output-on-failure -V
 
   firmware-uf2:
     name: Build Pico W / WH Firmware (.uf2)
@@ -34,23 +29,28 @@ jobs:
 
       - name: Install ARM Toolchain & Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib python3
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib python3
 
-      - name: Clone Raspberry Pi Pico SDK
+      - name: Restore Pico SDK
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/pico-sdk
+          key: pico-sdk-2.2.0
+
+      - name: Prepare Raspberry Pi Pico SDK
         run: |
-          git clone --depth 1 --branch 2.2.0 https://github.com/raspberrypi/pico-sdk.git ${RUNNER_TEMP}/pico-sdk
-          cd ${RUNNER_TEMP}/pico-sdk
-          git submodule update --init --depth 1
+          if [ ! -f "${RUNNER_TEMP}/pico-sdk/pico_sdk_init.cmake" ]; then
+            git clone --depth 1 --branch 2.2.0 https://github.com/raspberrypi/pico-sdk.git "${RUNNER_TEMP}/pico-sdk"
+            git -C "${RUNNER_TEMP}/pico-sdk" submodule update --init --depth 1
+          fi
 
       - name: Build Firmware
         env:
           PICO_SDK_PATH: ${{ runner.temp }}/pico-sdk
         run: |
-          mkdir build
-          cd build
-          cmake -DPICO_BOARD=pico_w ..
-          make -j$(nproc)
+          cmake -S . -B build -DPICO_SDK_PATH="${PICO_SDK_PATH}" -DPICO_BOARD=pico_w
+          cmake --build build --parallel
 
       - name: Upload UF2 Artifact
         uses: actions/upload-artifact@v4
